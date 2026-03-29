@@ -1,0 +1,98 @@
+{% extends "papers/base.html" %}
+
+{% block title %}Home - Gujarat Exam Papers{% endblock %}
+
+{% block content %}
+<div class="row mb-5">
+    <div class="col-md-8 mx-auto text-center">
+        <h1 class="display-4 mb-3">Gujarat Gov Exam Papers</h1>
+        <p class="lead text-muted">Browse and download previous year question papers for various government exams.</p>
+        
+        <form action="{% url 'home' %}" method="GET" class="mt-4">
+            <div class="input-group input-group-lg">
+                <input type="text" name="q" class="form-control" placeholder="Search exams (e.g. GPSC, GSSSB)..." value="{{ query }}">
+                <button class="btn btn-primary px-4" type="submit">
+                    <i class="bi bi-search me-2"></i>Search
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="row row-cols-1 row-cols-md-3 g-4 mb-5">
+    {% for exam in page_obj %}
+    <div class="col">
+        <div class="card h-100" onclick="window.location.href='{% url 'exam_detail' exam %}'">
+            <div class="card-body text-center py-5">
+                <div class="mb-3 text-primary">
+                    <i class="bi bi-file-earmark-pdf fs-1"></i>
+                </div>
+                <h4 class="card-title text-uppercase">{{ exam }}</h4>
+                <p class="text-muted small">View all years</p>
+                <a href="{% url 'exam_detail' exam %}" class="btn btn-outline-primary btn-sm mt-3 px-4 rounded-pill">View Papers</a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12 text-center py-5">
+        <div class="alert alert-warning py-5">
+            <i class="bi bi-exclamation-triangle-fill fs-1 d-block mb-3"></i>
+            <h3>No Exams Found</h3>
+            <p class="mb-0">Try searching with a different keyword or browse all exams.</p>
+            <a href="{% url 'home' %}" class="btn btn-primary mt-3">Browse All Exams</a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="row mb-3">
+    <div class="col-12">
+        <p class="text-muted">Showing {{ start_index }} to {{ end_index }} of {{ total_entries }} entries</p>
+    </div>
+</div>
+
+{% if page_obj.has_other_pages %}
+<nav aria-label="Page navigation" class="mb-5">
+    <ul class="pagination">
+        <!-- Previous Button -->
+        {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link text-dark" href="?page={{ page_obj.previous_page_number }}{% if query %}&q={{ query }}{% endif %}">Previous</a>
+            </li>
+        {% else %}
+            <li class="page-item disabled">
+                <span class="page-link text-muted">Previous</span>
+            </li>
+        {% endif %}
+
+        <!-- Page Numbers -->
+        {% for i in custom_page_range %}
+            {% if i == page_obj.number %}
+                <li class="page-item active">
+                    <span class="page-link bg-primary border-primary">{{ i }}</span>
+                </li>
+            {% elif i == page_obj.paginator.ELLIPSIS %}
+                <li class="page-item disabled">
+                    <span class="page-link border-0">...</span>
+                </li>
+            {% else %}
+                <li class="page-item">
+                    <a class="page-link text-primary" href="?page={{ i }}{% if query %}&q={{ query }}{% endif %}">{{ i }}</a>
+                </li>
+            {% endif %}
+        {% endfor %}
+
+        <!-- Next Button -->
+        {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link text-primary" href="?page={{ page_obj.next_page_number }}{% if query %}&q={{ query }}{% endif %}">Next</a>
+            </li>
+        {% else %}
+            <li class="page-item disabled">
+                <span class="page-link text-muted">Next</span>
+            </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+{% endblock %}
